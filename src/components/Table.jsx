@@ -1,14 +1,50 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import AppContext from '../AppContext';
 
 function Table() {
-  const { planets, setNamePlanet, namePlanet } = useContext(AppContext);
-  /*  */
+  const {
+    planets,
+    setNamePlanet,
+    namePlanet,
+    filtersContext,
+    setFilters } = useContext(AppContext);
+
+    const [column, setColumn] = useState('population');
+    const [comparison, setComparison] = useState('');
+    const [value, setValue] = useState(0);
+
+    // console.log(planets);
+    /* const { name } = filters.filterByName;
+    const { column, comparison, value } = filters.filterByNumericValues; */
+
+  /* useEffect(() => {
+    let planetsArray = [];
+  
+    console.log('array vindo de dentro do useEffect: ');
+    console.log(planetsArray);
+  },
+  [filtersContext])*/
+
   const renderPlanets = () => {
+    const tamanho = filtersContext.filters.filterByNumericValues.length
+    const { comparison } = filtersContext.filters.filterByNumericValues[tamanho];
     let planetsArray = null;
-    if (namePlanet) {
+    if (namePlanet && comparison === '') {
       planetsArray = planets.filter(
-        (planet) => planet.name.includes(namePlanet),
+        (planet) => planet.name.includes(namePlanet)
+      );
+    } else if (comparison === 'maior que') {
+      console.log('dentro do if maiorQue');
+      planetsArray = planets.filter(
+        (planet) => planet.name.includes(namePlanet) && planet.population > parseInt(value)
+      );
+    } else if (namePlanet && comparison === 'menor que') {
+      planetsArray = planets.filter(
+        (planet) => planet.name.includes(namePlanet) && planet.population < parseInt(value)
+      );
+    } else if (namePlanet && comparison === 'igual a') {
+      planetsArray = planets.filter(
+        (planet) => planet.name.includes(namePlanet) && planet.population === parseInt(value)
       );
     } else {
       planetsArray = planets;
@@ -56,9 +92,72 @@ function Table() {
     );
   }
 
+  const submitFilter = () => {
+    console.log('evento de submit')
+;    filtersContext.filters.filterByNumericValues.push({
+      column,
+      comparison,
+      value,
+    })
+    setFilters(filtersContext);
+    console.log(filtersContext)
+  }
+
   return (
     <div>
       <input type="text" onChange={ (e) => setNamePlanet(e.target.value) } data-testid='name-filter' value={ namePlanet } />
+      <select
+        data-testid='column-filter'
+        onChange={(event) => setColumn(event.target.value)}
+        value={ column }
+        name="column"
+      >
+        <option>
+          population
+        </option>
+        <option>
+          orbital_period
+        </option>
+        <option>
+          diameter
+        </option>
+        <option>
+          rotation_period
+        </option>
+        <option>
+          surface_water
+        </option>
+      </select>
+
+      <select
+        data-testid='comparison-filter'
+        onChange={(event) => {
+          console.log(event.target.value)
+          setComparison(event.target.value);
+        }}
+        value={comparison}
+        name="comparison"
+      >
+        <option>
+          maior que
+        </option>
+        <option>
+          menor que
+        </option>
+        <option>
+          igual a
+        </option>
+      </select>
+
+      <input
+        data-testid='value-filter'
+        type="number"
+        onChange={(event) => setValue(event.target.value)}
+        value={ value }
+        name="value"
+      />
+
+      <button data-testid='button-filter' onClick={ submitFilter }>Filtrar</button>
       {
         renderPlanets()
       }

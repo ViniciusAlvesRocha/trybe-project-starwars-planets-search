@@ -5,6 +5,23 @@ import PropTypes from 'prop-types';
 function Provider({ children }) {
   const [planets, setPlanets] = useState([]);
   const [namePlanet, setNamePlanet] = useState('');
+  const [filtersContext, setFilters] = useState({
+    filters:
+      {
+        filterByName: {
+          name: ''
+        },
+        filterByNumericValues: [
+          {
+            column: 'population',
+            comparison: 'maior que',
+            value: '100000',
+          }
+        ]
+      }
+    }
+  );
+
 
   const getPlanets = () => fetch('https://swapi-trybe.herokuapp.com/api/planets/?format=json')
     .then((response) => response.json())
@@ -22,6 +39,8 @@ function Provider({ children }) {
     setPlanets,
     namePlanet,
     setNamePlanet,
+    filtersContext,
+    setFilters,
   };
 
   return (
