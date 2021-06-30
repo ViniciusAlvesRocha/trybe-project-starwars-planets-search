@@ -1,36 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import AppContext from './AppContext';
 import PropTypes from 'prop-types';
+import AppContext from './AppContext';
 
+const INITIAL_STATE_FILTERS = {
+  filterByName: { name: '' },
+  filterByNumericValues: [
+    {
+      column: '',
+      comparison: '',
+      value: '',
+    },
+  ],
+};
 function Provider({ children }) {
   const [planets, setPlanets] = useState([]);
   const [namePlanet, setNamePlanet] = useState('');
-  const [filtersContext, setFilters] = useState({
-    filters:
-      {
-        filterByName: {
-          name: ''
-        },
-        filterByNumericValues: [
-          {
-            column: 'population',
-            comparison: 'maior que',
-            value: '100000',
-          }
-        ]
-      }
-    }
-  );
-
+  const [filters, setFilters] = useState(INITIAL_STATE_FILTERS);
+  const [column, setColumn] = useState('');
+  const [comparison, setComparison] = useState('');
+  const [value, setValue] = useState('');
 
   const getPlanets = () => fetch('https://swapi-trybe.herokuapp.com/api/planets/?format=json')
     .then((response) => response.json())
     .then((response) => {
-      // console.log(response.results);
       setPlanets(response.results);
     });
 
-  useEffect(() =>{
+  useEffect(() => {
+    console.log('');
     getPlanets();
   }, []);
 
@@ -39,8 +36,14 @@ function Provider({ children }) {
     setPlanets,
     namePlanet,
     setNamePlanet,
-    filtersContext,
+    filters,
     setFilters,
+    column,
+    setColumn,
+    comparison,
+    setComparison,
+    value,
+    setValue,
   };
 
   return (
